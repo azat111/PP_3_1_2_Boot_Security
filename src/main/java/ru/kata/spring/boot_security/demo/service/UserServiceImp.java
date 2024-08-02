@@ -4,9 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.kata.spring.boot_security.demo.dao.UserDAO;
 import ru.kata.spring.boot_security.demo.models.User;
-import ru.kata.spring.boot_security.demo.security.UserDetail;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,43 +18,51 @@ public class UserServiceImp implements UserService {
     private UserDAO userDAO;
 
     @Override
+    @Transactional(readOnly = true)
     public List<User> index() {
         return userDAO.index();
     }
 
     @Override
+    @Transactional
     public void save(User user) {
         userDAO.save(user);
     }
 
     @Override
+    @Transactional
     public void delete(int id) {
         userDAO.delete(id);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public User findById(int id) {
         return userDAO.findById(id);
     }
 
     @Override
-    public void update(User user) {
-        userDAO.update(user);
+    @Transactional
+    public void update(int id, String name, int age) {
+        userDAO.update(id, name, age);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<User> findByUsername(String username) {
         return userDAO.findByUsername(username);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<User> user = Optional.ofNullable(userDAO.findByUsername(username).orElse(null));
 
-        if(user.isEmpty())
-            throw new UsernameNotFoundException("User not found");
+        if (user.isEmpty()) throw new UsernameNotFoundException("User not found");
+
+        user.get().getRoles().size();
 
         System.out.println("User found: " + user.get().getName());
-        return new UserDetail(user.get());
+        return user.get();
     }
 }

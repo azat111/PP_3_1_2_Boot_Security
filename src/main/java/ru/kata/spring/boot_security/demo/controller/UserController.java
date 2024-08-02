@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import ru.kata.spring.boot_security.demo.models.User;
 import ru.kata.spring.boot_security.demo.service.UserService;
 
-import javax.persistence.EntityManager;
-
 
 @Controller
 public class UserController {
@@ -22,12 +20,8 @@ public class UserController {
     private final UserService userService;
 
     @Autowired
-    private final EntityManager entityManager;
-
-    @Autowired
-    public UserController(UserService userService, EntityManager entityManager) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.entityManager = entityManager;
     }
 
     @GetMapping("/admin")
@@ -40,7 +34,6 @@ public class UserController {
     public String getUser(Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
-
         User user = userService.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
         model.addAttribute("user", user);
         return "user";
@@ -76,10 +69,7 @@ public class UserController {
 
     @PostMapping("/admin/user/editUser")
     public String edit(@RequestParam("id") int id, String model, int age) {
-        User user = userService.findById(id);
-        user.setAge(age);
-        user.setName(model);
-        userService.update(user);
+        userService.update(id, model, age);
         return "redirect:/admin";
     }
 }

@@ -1,10 +1,8 @@
 package ru.kata.spring.boot_security.demo.dao;
 
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 import ru.kata.spring.boot_security.demo.models.Role;
 import ru.kata.spring.boot_security.demo.models.User;
-
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -19,23 +17,24 @@ public class UserDAOImp implements UserDAO {
     private EntityManager entityManager;
 
     @Override
-    @Transactional
     public List<User> index() {
         List<User> userlist = entityManager.createQuery("FROM User", User.class).getResultList();
         return userlist;
     }
 
     @Override
-    @Transactional
     public void save(User user) {
-        Role role = new Role("ROLE_USER",user );
+        Role role = new Role("ROLE_USER", user);
         user.setRoles(Arrays.asList(role));
-        user.setPassword("111");
         entityManager.persist(user);
     }
 
     @Override
-    @Transactional
+    public void saveWothoutRole(User user) {
+        entityManager.persist(user);
+    }
+
+    @Override
     public void delete(int id) {
         User user = entityManager.find(User.class, id);
         if (user != null) {
@@ -50,8 +49,10 @@ public class UserDAOImp implements UserDAO {
     }
 
     @Override
-    @Transactional
-    public void update(User user) {
+    public void update(int id, String name, int age) {
+        User user = findById(id);
+        user.setAge(age);
+        user.setName(name);
         entityManager.merge(user);
     }
 

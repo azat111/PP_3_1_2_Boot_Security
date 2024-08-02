@@ -16,7 +16,9 @@ public interface UserDAO {
 
     User findById(int id);
 
-    void update(User user);
+    void update(int id, String name, int age);
 
     Optional<User> findByUsername(String username);
+
+    void saveWothoutRole(User user);
 }
