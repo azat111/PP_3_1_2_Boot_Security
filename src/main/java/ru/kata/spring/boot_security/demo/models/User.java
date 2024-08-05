@@ -43,10 +43,27 @@ public class User implements UserDetails {
     }
 
     public void setRoles(List<Role> roles) {
-        this.roles = roles;
-        for (Role role : roles) {
-            role.setUser(this);  // Обратная связь
+        if (this.roles == null) {
+            this.roles = new ArrayList<>();
         }
+        for (Role newRole : roles) {
+            boolean roleExists = this.roles.stream()
+                    .anyMatch(existingRole -> existingRole.getRole().equals(newRole.getRole()));
+
+            if (!roleExists) {
+                this.roles.add(newRole);
+                newRole.setUser(this);
+            }
+        }
+    }
+
+    public String getStringRoles() {
+        StringBuilder sb = new StringBuilder();
+        for (Role role : roles) {
+            sb.append(role.getRole().substring(5) + " ");
+        }
+
+        return sb.toString();
     }
 
     public void setPassword(String password) {
@@ -129,4 +146,5 @@ public class User implements UserDetails {
                 ", password='" + password + '\'' +
                 '}';
     }
+
 }

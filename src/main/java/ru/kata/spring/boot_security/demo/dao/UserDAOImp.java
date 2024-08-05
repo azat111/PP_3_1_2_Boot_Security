@@ -6,7 +6,7 @@ import ru.kata.spring.boot_security.demo.models.User;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,8 +24,6 @@ public class UserDAOImp implements UserDAO {
 
     @Override
     public void save(User user) {
-        Role role = new Role("ROLE_USER", user);
-        user.setRoles(Arrays.asList(role));
         entityManager.persist(user);
     }
 
@@ -49,10 +47,17 @@ public class UserDAOImp implements UserDAO {
     }
 
     @Override
-    public void update(int id, String name, int age) {
+    public void update(int id, String name, int age, String password, String role) {
         User user = findById(id);
         user.setAge(age);
         user.setName(name);
+        user.setPassword(password);
+
+        List<Role> newRoles = new ArrayList<>();
+        newRoles.add(new Role("ROLE_" + role));
+
+        user.setRoles(newRoles);
+
         entityManager.merge(user);
     }
 

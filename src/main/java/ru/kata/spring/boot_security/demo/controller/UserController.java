@@ -26,7 +26,11 @@ public class UserController {
 
     @GetMapping("/admin")
     public String getCars(Model model) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        User user = userService.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
         model.addAttribute("users", userService.index());
+        model.addAttribute("user", user);
         return "admin";
     }
 
@@ -68,8 +72,8 @@ public class UserController {
     }
 
     @PostMapping("/admin/user/editUser")
-    public String edit(@RequestParam("id") int id, String model, int age) {
-        userService.update(id, model, age);
+    public String edit(@RequestParam("id") int id, String name, int age, String password, String roles) {
+        userService.update(id, name, age, password, roles);
         return "redirect:/admin";
     }
 }
