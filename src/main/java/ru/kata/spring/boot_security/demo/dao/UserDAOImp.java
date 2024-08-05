@@ -24,7 +24,7 @@ public class UserDAOImp implements UserDAO {
 
     @Override
     public void save(User user) {
-        Role role = new Role("ROLE_USER", user);
+        Role role = Role.findByRoleName("ROLE_USER",entityManager);
         user.setRoles(Arrays.asList(role));
         entityManager.persist(user);
     }
@@ -38,6 +38,7 @@ public class UserDAOImp implements UserDAO {
     public void delete(int id) {
         User user = entityManager.find(User.class, id);
         if (user != null) {
+            user.getRoles().clear();
             entityManager.remove(user);
         }
     }
@@ -49,10 +50,11 @@ public class UserDAOImp implements UserDAO {
     }
 
     @Override
-    public void update(int id, String name, int age) {
+    public void update(int id, String name, int age , String password) {
         User user = findById(id);
         user.setAge(age);
         user.setName(name);
+        user.setPassword(password);
         entityManager.merge(user);
     }
 

@@ -21,14 +21,14 @@ public class CreateTestUsers implements CommandLineRunner {
     public void run(String... args) throws Exception {
         if (userDAO.findByUsername("admin").isEmpty()) {
             User adminUser = new User("admin", 30, "admin");
-            Role adminRole = new Role("ROLE_ADMIN", adminUser);
+            Role adminRole = new Role("ROLE_ADMIN", Arrays.asList(adminUser));
             adminUser.setRoles(Arrays.asList(adminRole));
             userDAO.saveWothoutRole(adminUser);
         }
 
         if (userDAO.findByUsername("user").isEmpty()) {
             User normalUser = new User("user", 25, "user");
-            Role userRole = new Role("ROLE_USER", normalUser);
+            Role userRole = new Role("ROLE_USER", Arrays.asList(normalUser));
             normalUser.setRoles(Arrays.asList(userRole));
             userDAO.saveWothoutRole(normalUser);
         }

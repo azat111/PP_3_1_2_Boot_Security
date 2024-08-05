@@ -68,8 +68,8 @@ public class UserController {
     }
 
     @PostMapping("/admin/user/editUser")
-    public String edit(@RequestParam("id") int id, String model, int age) {
-        userService.update(id, model, age);
+    public String edit(@RequestParam("id") int id, String model, int age, String password) {
+        userService.update(id, model, age, password);
         return "redirect:/admin";
     }
 }

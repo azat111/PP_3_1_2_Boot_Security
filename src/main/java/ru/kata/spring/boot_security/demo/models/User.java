@@ -25,7 +25,12 @@ public class User implements UserDetails {
     private String password;
 
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @ManyToMany
+    @JoinTable(
+            name = "User_Role",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
     private List<Role> roles;
 
@@ -44,9 +49,6 @@ public class User implements UserDetails {
 
     public void setRoles(List<Role> roles) {
         this.roles = roles;
-        for (Role role : roles) {
-            role.setUser(this);  // Обратная связь
-        }
     }
 
     public void setPassword(String password) {
@@ -80,6 +82,7 @@ public class User implements UserDetails {
     public String getPas() {
         return password;
     }
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
