@@ -9,6 +9,7 @@ import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Repository
 public class UserDAOImp implements UserDAO {
@@ -24,6 +25,8 @@ public class UserDAOImp implements UserDAO {
 
     @Override
     public void save(User user) {
+        List<Role> roles = user.getRoles().stream().map(role -> Role.findByRoleName(role.getRole(), entityManager)).collect(Collectors.toList());
+        user.setRoles(roles);
         entityManager.persist(user);
     }
 
@@ -36,6 +39,7 @@ public class UserDAOImp implements UserDAO {
     public void delete(int id) {
         User user = entityManager.find(User.class, id);
         if (user != null) {
+            user.getRoles().clear();
             entityManager.remove(user);
         }
     }
@@ -52,12 +56,9 @@ public class UserDAOImp implements UserDAO {
         user.setAge(age);
         user.setName(name);
         user.setPassword(password);
-
         List<Role> newRoles = new ArrayList<>();
         newRoles.add(new Role("ROLE_" + role));
-
         user.setRoles(newRoles);
-
         entityManager.merge(user);
     }
 

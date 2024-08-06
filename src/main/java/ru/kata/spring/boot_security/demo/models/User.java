@@ -25,7 +25,12 @@ public class User implements UserDetails {
     private String password;
 
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @ManyToMany
+    @JoinTable(
+            name = "User_Role",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
     private List<Role> roles;
 
@@ -43,18 +48,7 @@ public class User implements UserDetails {
     }
 
     public void setRoles(List<Role> roles) {
-        if (this.roles == null) {
-            this.roles = new ArrayList<>();
-        }
-        for (Role newRole : roles) {
-            boolean roleExists = this.roles.stream()
-                    .anyMatch(existingRole -> existingRole.getRole().equals(newRole.getRole()));
-
-            if (!roleExists) {
-                this.roles.add(newRole);
-                newRole.setUser(this);
-            }
-        }
+        this.roles = roles;
     }
 
     public String getStringRoles() {
